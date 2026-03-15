@@ -1,119 +1,92 @@
-import { useState } from 'react'
+import { useCallback, useEffect, useState, useRef } from 'react'
 import reactLogo from './assets/react.svg'
 import viteLogo from './assets/vite.svg'
 import heroImg from './assets/hero.png'
 import './App.css'
 
 function App() {
-  const [count, setCount] = useState(0)
+ 
+ const [length , setLenght] = useState(6)
+const [numberAllow , setNumberAllow] = useState(false)
+const [characters , setCharacters] = useState(false)
+const [password , setPassword] = useState("")
+
+const passwordGenerator = useCallback(() =>{
+  let pass = ""
+  let str = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz"
+  if(numberAllow) str += "0123456789"
+  if(characters) str += "!@#$%^&*_-=+{}[]`~"
+
+ for(let i = 1;i <= length; i++){
+  let char = Math.floor(Math.random() * str.length +i)
+  pass += str.charAt(char)
+  setPassword(pass)
+ }
+
+},[length,numberAllow,characters,password])
+
+const passwordRef = useRef(null)
+
+const copyClipBoard = useCallback(() =>{
+  passwordRef.current?.select()
+ window.navigator.clipboard.writeText(password)
+},[password])
+
+useEffect(() =>{
+  passwordGenerator()
+},[length,numberAllow,characters,setPassword])
 
   return (
     <>
-      <section id="center">
-        <div className="hero">
-          <img src={heroImg} className="base" width="170" height="179" alt="" />
-          <img src={reactLogo} className="framework" alt="React logo" />
-          <img src={viteLogo} className="vite" alt="Vite logo" />
+      <div className='bg-gray-800 p-6 rounded-xl w-1/2 m-auto text-white'>
+        <div className='flex mb-4'>
+          <input type="text"
+           value={password}
+           ref={passwordRef}
+            readOnly
+            className='rounded-s-md p-4 w-96 text-black outline-none' />
+          <button className='bg-blue-700 p-4 rounded-e-md'
+          onClick={copyClipBoard}
+         >
+            Copy
+          </button>
         </div>
-        <div>
-          <h1>Get started</h1>
-          <p>
-            Edit <code>src/App.jsx</code> and save to test <code>HMR</code>
-          </p>
-        </div>
-        <button
-          className="counter"
-          onClick={() => setCount((count) => count + 1)}
-        >
-          Count is {count}
-        </button>
-      </section>
+        <div className='flex gap-3'>
+          <div >
+            <input
+              type="range"
+              value={length}
+              min={6}
+              max={100}
+              onChange={(e) => {setLenght(e.target.value)}}
+            />
+            <label>length: {length}</label>
+          </div>
+          <div className="flex gap-4 text-sm">
 
-      <div className="ticks"></div>
+            <label className="flex items-center gap-1">
+              <input type="checkbox"
+               defaultChecked={numberAllow}
+               onChange={()=>{
+                setNumberAllow ((prev) => !prev) 
+               }}
+                />
+              Numbers
+            </label>
 
-      <section id="next-steps">
-        <div id="docs">
-          <svg className="icon" role="presentation" aria-hidden="true">
-            <use href="/icons.svg#documentation-icon"></use>
-          </svg>
-          <h2>Documentation</h2>
-          <p>Your questions, answered</p>
-          <ul>
-            <li>
-              <a href="https://vite.dev/" target="_blank">
-                <img className="logo" src={viteLogo} alt="" />
-                Explore Vite
-              </a>
-            </li>
-            <li>
-              <a href="https://react.dev/" target="_blank">
-                <img className="button-icon" src={reactLogo} alt="" />
-                Learn more
-              </a>
-            </li>
-          </ul>
-        </div>
-        <div id="social">
-          <svg className="icon" role="presentation" aria-hidden="true">
-            <use href="/icons.svg#social-icon"></use>
-          </svg>
-          <h2>Connect with us</h2>
-          <p>Join the Vite community</p>
-          <ul>
-            <li>
-              <a href="https://github.com/vitejs/vite" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#github-icon"></use>
-                </svg>
-                GitHub
-              </a>
-            </li>
-            <li>
-              <a href="https://chat.vite.dev/" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#discord-icon"></use>
-                </svg>
-                Discord
-              </a>
-            </li>
-            <li>
-              <a href="https://x.com/vite_js" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#x-icon"></use>
-                </svg>
-                X.com
-              </a>
-            </li>
-            <li>
-              <a href="https://bsky.app/profile/vite.dev" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#bluesky-icon"></use>
-                </svg>
-                Bluesky
-              </a>
-            </li>
-          </ul>
-        </div>
-      </section>
+            <label className="flex items-center gap-1">
+              <input type="checkbox"
+              defaultChecked={characters}
+              onChange={()=>{
+                setCharacters ((prev) => !prev)
+              }}
+                />
+              Characters
+            </label>
 
-      <div className="ticks"></div>
-      <section id="spacer"></section>
+          </div>
+        </div>
+      </div>
     </>
   )
 }

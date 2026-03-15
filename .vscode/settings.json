@@ -1,0 +1,4 @@
+{
+    // Unknown at-rule.
+	"css.lint.unknownAtRules": "ignore",
+}
